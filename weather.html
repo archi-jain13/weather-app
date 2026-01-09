@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CloudCast - Weather App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>CloudCast</h1>
+  <input type="text" id="city" placeholder="Enter City Name">
+  <button onclick="getWeather()">Get Weather</button>
+
+  <div id="result"></div>
+
+  <script>
+    async function getWeather() {
+      const inputEl = document.getElementById("city");
+      const resultEl = document.getElementById("result");
+      const cityRaw = inputEl.value.trim();
+
+      if (!cityRaw) {
+        resultEl.innerHTML = "<p style='color:#ffb3b3;'>Please enter a city name.</p>";
+        return;
+      }
+
+      const city = encodeURIComponent(cityRaw);
+      const apiKey = "0473845c8fe9c34764bdfe9cfd86e025"; // ensure this key is valid
+      const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+
+      resultEl.innerHTML = "<p>Loading...</p>";
+
+      try {
+        const response = await fetch(url);
+        const data = await response.json().catch(() => null);
+
+        if (!response.ok) {
+          const message = (data && data.message) ? data.message : `Request failed (${response.status})`;
+          throw new Error(message);
+        }
+
+        resultEl.innerHTML = `
+          <h2>${data.name}, ${data.sys.country}</h2>
+          <p><b>Temperature:</b> ${data.main.temp} °C</p>
+          <p><b>Weather:</b> ${data.weather[0].description}</p>
+          <p><b>Humidity:</b> ${data.main.humidity}%</p>
+          <p><b>Wind Speed:</b> ${data.wind.speed} m/s</p>
+        `;
+      } catch (error) {
+        resultEl.innerHTML = `<p style='color:#ffb3b3;'>${error.message}</p>`;
+      }
+    }
+
+    // Enter key trigger
+    document.getElementById("city").addEventListener("keyup", (e) => {
+      if (e.key === "Enter") getWeather();
+    });
+  </script>
+</body>
+</html>
