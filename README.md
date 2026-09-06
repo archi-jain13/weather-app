@@ -1,63 +1,67 @@
-# CloudCast - Weather App
+# CloudCast
 
-A simple and elegant weather application that fetches real-time weather data using the OpenWeatherMap API.
+CloudCast is a lightweight weather dashboard for checking current conditions and a seven-day forecast by city. It uses a responsive glass-style interface and runs entirely in the browser with no build step or API key required.
 
 ## Features
 
-- 🌤️ Real-time weather information
-- 🌍 Search weather by city name
-- 🎨 Modern, gradient UI design
-- 📱 Responsive layout
-- ⌨️ Enter key support for quick searches
+- Search for weather by city name
+- View current temperature, feels-like temperature, humidity, wind speed, and conditions
+- See a seven-day high and low forecast
+- Compare current temperatures in a few major cities
+- Use the search button or press `Enter`
+- Get clear loading and error states when a request cannot be completed
+- Responsive layout for desktop and mobile screens
 
-## Weather Information Displayed
-
-- Temperature (in Celsius)
-- Weather conditions
-- Humidity percentage
-- Wind speed
-- City and country
-
-## Technologies Used
+## Built With
 
 - HTML5
-- CSS3 (with custom properties/variables)
+- CSS3, including custom properties, gradients, and responsive media queries
 - Vanilla JavaScript (ES6+)
-- OpenWeatherMap API
+- [Open-Meteo Geocoding API](https://open-meteo.com/en/docs/geocoding-api)
+- [Open-Meteo Forecast API](https://open-meteo.com/en/docs)
 
-## Setup Instructions
+## Getting Started
 
-1. Clone or download this repository
-2. Open the `weather.html` file in your web browser
-3. (Optional) Replace the API key in `weather.html` with your own OpenWeatherMap API key
+### Run locally
 
-## Getting Your Own API Key
+1. Clone or download this repository.
+2. Open `weather.html` in a modern web browser.
+3. Search for a city to load its weather data.
 
-1. Visit [OpenWeatherMap](https://openweathermap.org/api)
-2. Sign up for a free account
-3. Generate your API key
-4. Replace the existing `apiKey` value in the JavaScript code
+No installation, build command, or API key is required. Because the app requests live data from Open-Meteo, an internet connection is needed for searches.
 
-## Usage
+### Optional local server
 
-1. Enter a city name in the input field
-2. Click "Get Weather" button or press Enter
-3. View the weather information displayed
+For a local development server, run the following from the project directory:
 
-## UI Design
+```bash
+python -m http.server 8000
+```
 
-- Dark theme with gradient backgrounds
-- Cyan and orange accent colors
-- Smooth transitions and hover effects
-- Glassmorphism-inspired design elements
+Then open <http://localhost:8000/weather.html>.
 
-## Browser Compatibility
+## Project Structure
 
-Works on all modern browsers that support:
-- ES6+ JavaScript features
+```text
+.
+├── weather.html   # Application markup, styles, and JavaScript
+├── style.css      # Additional stylesheet for the original layout
+└── README.md      # Project documentation
+```
+
+## Browser Support
+
+CloudCast requires a modern browser with support for:
+
+- ES6+ JavaScript
+- The Fetch API
 - CSS custom properties
-- Fetch API
+- `backdrop-filter`
+
+## Data and Attribution
+
+Weather and geocoding data are provided by [Open-Meteo](https://open-meteo.com/). Forecast data is subject to the availability and accuracy of the upstream service.
 
 ## License
 
-Free to use for educational purposes.
+This project is provided for educational and personal use.

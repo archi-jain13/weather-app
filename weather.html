@@ -1,60 +1,105 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>CloudCast - Weather App</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CloudCast</title>
+<style>
+  * { box-sizing: border-box; }
+  :root { --cyan: #6087f5; --orange: #F59E0B; --navy-deep: #0B1120; --panel: rgba(255,255,255,0.05); --panel-border: rgba(255,255,255,0.09); --text-primary: #F1F5F9; --text-muted: #8B96A8; }
+  body { margin: 0; min-height: 100vh; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: linear-gradient(rgba(11,17,32,0.58), rgba(11,17,32,0.72)), url("white-clouds-blue-sky-daytime.jpg") center / cover fixed no-repeat; color: var(--text-primary); padding: 28px; }
+  .app { max-width: 1180px; margin: 0 auto; }
+  .topbar { display: flex; align-items: center; justify-content: space-between; padding: 6px 4px 28px; }
+  .logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 20px; }
+  .logo-mark { width: 30px; height: 30px; border-radius: 8px; background: linear-gradient(135deg, var(--cyan), var(--orange)); display: flex; align-items: center; justify-content: center; font-size: 15px; }
+  .brand-cast { background: linear-gradient(90deg, var(--cyan), var(--orange)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .datetime { text-align: right; font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+  .datetime .time { font-size: 15px; font-weight: 700; color: var(--text-primary); }
+  .search-row { display: flex; gap: 14px; margin-bottom: 36px; }
+  #city-input { flex: 1; background: var(--panel); border: 1px solid var(--panel-border); border-radius: 12px; padding: 16px 20px; color: var(--text-primary); font-size: 15px; outline: none; backdrop-filter: blur(8px); }
+  #city-input::placeholder { color: var(--text-muted); }
+  #city-input:focus { border-color: #6087f5; }
+  #search-btn { display: flex; align-items: center; gap: 8px; padding: 0 30px; border: none; border-radius: 12px; background: linear-gradient(90deg, var(--cyan), #6087f5 45%, var(--orange)); color: #0B1120; font-weight: 800; font-size: 15px; cursor: pointer; white-space: nowrap; }
+  #search-btn:active { transform: translateY(1px); }
+  #search-btn:disabled { opacity: 0.6; cursor: default; }
+  .content-grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 24px; margin-bottom: 24px; }
+  .panel { background: var(--panel); border: 1px solid var(--panel-border); border-radius: 20px; backdrop-filter: blur(10px); padding: 36px; position: relative; overflow: hidden; }
+  .left-panel { display: flex; flex-direction: column; justify-content: space-between; min-height: 380px; }
+  .condition-title, .condition-sub { font-size: 42px; font-weight: 800; margin: 0 0 4px; line-height: 1.08; letter-spacing: -0.5px; }
+  .condition-sub { margin-bottom: 16px; color: var(--text-muted); }
+  .condition-desc { color: var(--text-muted); font-size: 14.5px; line-height: 1.6; max-width: 420px; }
+  .mini-cities { display: flex; gap: 34px; margin-top: 30px; padding-top: 24px; border-top: 1px solid var(--panel-border); }
+  .mini-city .temp { font-size: 26px; font-weight: 800; }
+  .mini-city .name { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+  .mini-city .bar { height: 3px; border-radius: 3px; margin-top: 10px; width: 60px; }
+  .right-panel { display: flex; flex-direction: column; }
+  .loc-tag { display: flex; align-items: center; justify-content: space-between; font-size: 13px; color: var(--text-muted); margin-bottom: 20px; }
+  .loc-tag .pill { background: rgba(34,211,238,0.12); color: var(--cyan); padding: 4px 12px; border-radius: 999px; font-weight: 700; font-size: 11px; letter-spacing: 0.04em; }
+  .temp-display { display: flex; align-items: flex-start; gap: 6px; }
+  .temp-number { font-size: 96px; font-weight: 800; line-height: 0.9; letter-spacing: -3px; }
+  .temp-unit { font-size: 30px; font-weight: 700; margin-top: 10px; color: var(--text-muted); }
+  .feels-like { color: var(--text-muted); font-size: 14px; margin-top: 8px; }
+  .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: auto; padding-top: 28px; }
+  .stat-card { background: rgba(255,255,255,0.04); border: 1px solid var(--panel-border); border-radius: 14px; padding: 14px 16px; }
+  .stat-card .label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  .stat-card .value { font-size: 20px; font-weight: 700; margin-top: 4px; }
+  .forecast-panel { padding: 26px 30px; }
+  .forecast-title { font-size: 13px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 18px; }
+  .forecast-strip { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
+  .forecast-day { text-align: center; padding: 14px 6px; border-radius: 12px; background: rgba(255,255,255,0.03); }
+  .forecast-day.today { background: rgba(34,211,238,0.1); border: 1px solid rgba(34,211,238,0.3); }
+  .forecast-day .dow { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; font-weight: 600; }
+  .forecast-day svg { width: 26px; height: 26px; margin-bottom: 6px; }
+  .forecast-day .hi { font-size: 15px; font-weight: 700; }
+  .forecast-day .lo { font-size: 12px; color: var(--text-muted); }
+  .status-msg { text-align: center; color: var(--text-muted); font-size: 14px; padding: 40px 0; }
+  .status-msg.error { color: #f87171; }
+  @media (max-width: 860px) { .content-grid { grid-template-columns: 1fr; } .forecast-strip { grid-template-columns: repeat(4, 1fr); } .forecast-day:nth-child(n+5) { display: none; } .temp-number { font-size: 76px; } }
+</style>
 </head>
 <body>
-  <h1>CloudCast</h1>
-  <input type="text" id="city" placeholder="Enter City Name">
-  <button onclick="getWeather()">Get Weather</button>
-
-  <div id="result"></div>
-
-  <script>
-    async function getWeather() {
-      const inputEl = document.getElementById("city");
-      const resultEl = document.getElementById("result");
-      const cityRaw = inputEl.value.trim();
-
-      if (!cityRaw) {
-        resultEl.innerHTML = "<p style='color:#ffb3b3;'>Please enter a city name.</p>";
-        return;
-      }
-
-      const city = encodeURIComponent(cityRaw);
-      const apiKey = "0473845c8fe9c34764bdfe9cfd86e025"; // ensure this key is valid
-      const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
-
-      resultEl.innerHTML = "<p>Loading...</p>";
-
-      try {
-        const response = await fetch(url);
-        const data = await response.json().catch(() => null);
-
-        if (!response.ok) {
-          const message = (data && data.message) ? data.message : `Request failed (${response.status})`;
-          throw new Error(message);
-        }
-
-        resultEl.innerHTML = `
-          <h2>${data.name}, ${data.sys.country}</h2>
-          <p><b>Temperature:</b> ${data.main.temp} °C</p>
-          <p><b>Weather:</b> ${data.weather[0].description}</p>
-          <p><b>Humidity:</b> ${data.main.humidity}%</p>
-          <p><b>Wind Speed:</b> ${data.wind.speed} m/s</p>
-        `;
-      } catch (error) {
-        resultEl.innerHTML = `<p style='color:#ffb3b3;'>${error.message}</p>`;
-      }
-    }
-
-    // Enter key trigger
-    document.getElementById("city").addEventListener("keyup", (e) => {
-      if (e.key === "Enter") getWeather();
-    });
-  </script>
+<div class="app">
+  <div class="topbar"><div class="logo"><div class="logo-mark">☁️</div><span>Cloud<span class="brand-cast">Cast</span></span></div><div class="datetime"><div class="time" id="clock-time">--:--</div><div id="clock-date">--</div></div></div>
+  <div class="search-row"><input id="city-input" type="text" placeholder="Enter city name" /><button id="search-btn">Get Weather</button></div>
+  <div id="app-body"><div class="panel status-msg">Search a city to see the forecast.</div></div>
+</div>
+<script>
+  const WMO = {
+    0: { label: "Clear Skies", desc: "Clear sky with no significant cloud cover.", icon: "sun" }, 1: { label: "Mostly Clear", desc: "Mainly clear with a touch of cloud.", icon: "sun" }, 2: { label: "Partly Cloudy", desc: "A mix of sun and cloud through the day.", icon: "cloud-sun" }, 3: { label: "Overcast", desc: "Cloud covers most of the sky.", icon: "cloud" }, 45: { label: "Foggy", desc: "Reduced visibility from fog.", icon: "fog" }, 48: { label: "Icy Fog", desc: "Fog with depositing rime.", icon: "fog" }, 51: { label: "Light Drizzle", desc: "Light drizzle, on and off.", icon: "drizzle" }, 53: { label: "Drizzle", desc: "Moderate drizzle throughout the day.", icon: "drizzle" }, 55: { label: "Heavy Drizzle", desc: "Dense drizzle, roads may be slick.", icon: "drizzle" }, 61: { label: "Light Rain", desc: "Light rain showers expected.", icon: "rain" }, 63: { label: "Rain", desc: "Steady rain through the day.", icon: "rain" }, 65: { label: "Heavy Rain", desc: "Heavy rain, possible localized flooding.", icon: "rain" }, 71: { label: "Light Snow", desc: "Light snow falling intermittently.", icon: "snow" }, 73: { label: "Snow", desc: "Moderate snowfall expected.", icon: "snow" }, 75: { label: "Heavy Snow", desc: "Heavy snow, travel may be difficult.", icon: "snow" }, 80: { label: "Rain Showers", desc: "Scattered rain showers passing through.", icon: "rain" }, 81: { label: "Rain Showers", desc: "Frequent rain showers expected.", icon: "rain" }, 82: { label: "Storm with Heavy Rain", desc: "Violent rain showers with possible thunder.", icon: "storm" }, 95: { label: "Thunderstorm", desc: "Thunderstorms with lightning likely.", icon: "storm" }, 96: { label: "Storm with Hail", desc: "Thunderstorms with hail possible.", icon: "storm" }, 99: { label: "Severe Storm", desc: "Severe thunderstorm with heavy hail.", icon: "storm" }
+  };
+  const ICONS = {
+    sun: `<circle cx="12" cy="12" r="5" fill="#F2B375"/><g stroke="#E89A5C" stroke-width="2" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.2" y1="4.2" x2="5.6" y2="5.6"/><line x1="18.4" y1="18.4" x2="19.8" y2="19.8"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.2" y1="19.8" x2="5.6" y2="18.4"/><line x1="18.4" y1="5.6" x2="19.8" y2="4.2"/></g>`,
+    "cloud-sun": `<circle cx="8" cy="9" r="3.6" fill="#F2B375"/><path d="M4 18a4.5 4.5 0 0 1 1.2-8.8A5.5 5.5 0 0 1 15.9 8.5 4 4 0 0 1 15.5 18Z" fill="#EDE0D2"/>`, cloud: `<path d="M6.5 19a5 5 0 0 1 1.3-9.8A6.2 6.2 0 0 1 19.6 9.3 4.5 4.5 0 0 1 19 19Z" fill="#EDE0D2"/>`,
+    fog: `<path d="M6.5 12a5 5 0 0 1 1.3-6.8A6.2 6.2 0 0 1 19.6 6.3 4.5 4.5 0 0 1 19 12Z" fill="#6B5F72"/><g stroke="#8A7F91" stroke-width="2" stroke-linecap="round"><line x1="3" y1="16" x2="21" y2="16"/><line x1="3" y1="20" x2="17" y2="20"/></g>`,
+    drizzle: `<path d="M6.5 11a5 5 0 0 1 1.3-6.8A6.2 6.2 0 0 1 19.6 5.3 4.5 4.5 0 0 1 19 11Z" fill="#EDE0D2"/><g stroke="#8FA8C9" stroke-width="2" stroke-linecap="round"><line x1="8" y1="15" x2="7" y2="19"/><line x1="13" y1="15" x2="12" y2="19"/><line x1="18" y1="15" x2="17" y2="19"/></g>`,
+    rain: `<path d="M6.5 10a5 5 0 0 1 1.3-6.8A6.2 6.2 0 0 1 19.6 4.3 4.5 4.5 0 0 1 19 10Z" fill="#EDE0D2"/><g stroke="#8FA8C9" stroke-width="2.2" stroke-linecap="round"><line x1="7" y1="14" x2="5.5" y2="20"/><line x1="12" y1="14" x2="10.5" y2="20"/><line x1="17" y1="14" x2="15.5" y2="20"/></g>`,
+    snow: `<path d="M6.5 10a5 5 0 0 1 1.3-6.8A6.2 6.2 0 0 1 19.6 4.3 4.5 4.5 0 0 1 19 10Z" fill="#EDE0D2"/><g fill="#E4EAF2"><circle cx="7" cy="17" r="1.3"/><circle cx="12" cy="19" r="1.3"/><circle cx="17" cy="17" r="1.3"/></g>`,
+    storm: `<path d="M6.5 10a5 5 0 0 1 1.3-6.8A6.2 6.2 0 0 1 19.6 4.3 4.5 4.5 0 0 1 19 10Z" fill="#3F3B52"/><polygon points="13,13 9,19 12,19 10.5,23 16,16 13,16" fill="#F0A860"/>`
+  };
+  const weatherInfo = code => WMO[code] || { label: "Unsettled", desc: "Mixed conditions expected.", icon: "cloud" };
+  const iconSvg = (name, size = 32) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">${ICONS[name] || ICONS.cloud}</svg>`;
+  const DEFAULT_CITIES = ["London", "New York", "Tokyo"], appBody = document.getElementById("app-body"), input = document.getElementById("city-input"), btn = document.getElementById("search-btn");
+  function updateClock() { const now = new Date(); document.getElementById("clock-time").textContent = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }); document.getElementById("clock-date").textContent = now.toLocaleDateString([], { day: "numeric", month: "short", year: "numeric" }); }
+  updateClock(); setInterval(updateClock, 1000 * 30);
+  async function geocode(city) { const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1`); const data = await res.json(); return data.results && data.results.length ? data.results[0] : null; }
+  async function fetchForecast(lat, lon) { const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto`; const res = await fetch(url); return res.json(); }
+  async function fetchQuickTemp(city) { try { const loc = await geocode(city); if (!loc) return null; const data = await fetchForecast(loc.latitude, loc.longitude); return Math.round(data.current.temperature_2m); } catch { return null; } }
+  const renderLoading = () => { appBody.innerHTML = `<div class="panel status-msg">Fetching weather...</div>`; };
+  const renderError = msg => { appBody.innerHTML = `<div class="panel status-msg error">${msg}</div>`; };
+  const dayLabel = (dateStr, idx) => idx === 0 ? "Today" : new Date(dateStr).toLocaleDateString([], { weekday: "short" });
+  async function render(city) {
+    renderLoading(); let loc;
+    try { loc = await geocode(city); } catch { renderError("Couldn't reach the weather service. Check your connection and try again."); return; }
+    if (!loc) { renderError(`No results for "${city}". Try a different spelling.`); return; }
+    let data; try { data = await fetchForecast(loc.latitude, loc.longitude); } catch { renderError("Couldn't load the forecast right now. Please try again."); return; }
+    const cur = data.current, info = weatherInfo(cur.weather_code), [primaryWord, ...restWords] = info.label.split(" "), restWord = restWords.join(" ");
+    const compareCities = DEFAULT_CITIES.filter(c => c.toLowerCase() !== city.toLowerCase()).slice(0, 3), compareTemps = await Promise.all(compareCities.map(fetchQuickTemp));
+    const miniCitiesHtml = compareCities.map((c, i) => `<div class="mini-city"><div class="temp">${compareTemps[i] !== null ? compareTemps[i] + "°" : "—"}</div><div class="name">${c}</div><div class="bar" style="background: linear-gradient(90deg, var(--cyan), var(--orange));"></div></div>`).join("");
+    const forecastHtml = data.daily.time.map((date, i) => { const dInfo = weatherInfo(data.daily.weather_code[i]); return `<div class="forecast-day ${i === 0 ? "today" : ""}"><div class="dow">${dayLabel(date, i)}</div>${iconSvg(dInfo.icon, 24)}<div class="hi">${Math.round(data.daily.temperature_2m_max[i])}°</div><div class="lo">${Math.round(data.daily.temperature_2m_min[i])}°</div></div>`; }).join("");
+    appBody.innerHTML = `<div class="content-grid"><div class="panel left-panel"><div>${iconSvg(info.icon, 88)}<h1 class="condition-title">${primaryWord}</h1>${restWord ? `<h1 class="condition-sub">${restWord}</h1>` : ""}<p class="condition-desc">${info.desc} Humidity sits around ${cur.relative_humidity_2m}% with winds near ${Math.round(cur.wind_speed_10m)} km/h.</p></div><div class="mini-cities">${miniCitiesHtml}</div></div><div class="panel right-panel"><div class="loc-tag"><span>${loc.name}${loc.country ? ", " + loc.country : ""}</span><span class="pill">LIVE</span></div><div class="temp-display"><div class="temp-number">${Math.round(cur.temperature_2m)}</div><div class="temp-unit">°C</div></div><div class="feels-like">Feels like ${Math.round(cur.apparent_temperature)}°</div><div class="stat-grid"><div class="stat-card"><div class="label">Wind</div><div class="value">${Math.round(cur.wind_speed_10m)} km/h</div></div><div class="stat-card"><div class="label">Humidity</div><div class="value">${cur.relative_humidity_2m}%</div></div><div class="stat-card"><div class="label">Condition</div><div class="value">${info.label}</div></div><div class="stat-card"><div class="label">Updated</div><div class="value">${new Date(cur.time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</div></div></div></div></div><div class="panel forecast-panel"><div class="forecast-title">7-Day Outlook</div><div class="forecast-strip">${forecastHtml}</div></div>`;
+  }
+  function handleSearch() { const city = input.value.trim(); if (!city) return; btn.disabled = true; render(city).finally(() => { btn.disabled = false; }); }
+  btn.addEventListener("click", handleSearch); input.addEventListener("keydown", e => { if (e.key === "Enter") handleSearch(); });
+</script>
 </body>
 </html>

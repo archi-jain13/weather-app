@@ -1,7 +1,7 @@
 :root{
   --bg1:#0f172a;
   --bg2:#1e293b;
-  --accent:#22d3ee;
+  --accent:#6087f5;
   --accent2:#fb923c;
   --text:#e5e7eb;
   --muted:#94a3b8;
@@ -52,8 +52,8 @@ h1{
 }
 #city::placeholder{ color:var(--muted); }
 #city:focus{
-  border-color: rgba(34, 211, 238, 0.6);
-  box-shadow: 0 0 0 4px rgba(34,211,238,0.15);
+  border-color: #6087f5;
+  box-shadow: 0 0 0 4px rgba(96, 135, 245, 0.15);
   background:#0d1426;
 }
 
@@ -66,10 +66,10 @@ button{
   color:#0b1220;
   font-weight:600;
   background: linear-gradient(90deg, var(--accent), var(--accent2));
-  box-shadow: 0 8px 18px rgba(34,211,238,0.25);
+  box-shadow: 0 8px 18px rgba(96, 135, 245, 0.25);
   transition: transform .08s ease, filter .2s ease, box-shadow .2s ease;
 }
-button:hover{ filter:brightness(1.05); box-shadow: 0 10px 22px rgba(34,211,238,0.32); }
+button:hover{ filter:brightness(1.05); box-shadow: 0 10px 22px rgba(96, 135, 245, 0.32); }
 button:active{ transform: translateY(1px) scale(0.99); }
 
 #result{
